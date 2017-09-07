@@ -28,6 +28,6 @@ dependencies {
     //추가
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.journeyapps:zxing-android-embedded:3.4.0'
+    compile 'com.journeyapps:zxing-android-embedded:3.5.0'
     testCompile 'junit:junit:4.12'
 }
