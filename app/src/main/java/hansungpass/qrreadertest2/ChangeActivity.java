@@ -133,7 +133,7 @@ public class ChangeActivity extends AppCompatActivity {
         public void run() {
 
             //String host = "223.194.156.124";
-            String host = "223.194.152.119";
+            String host = "223.194.156.151";
             int port = 10004;
             System.out.println("스레드 시작");
 
