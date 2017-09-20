@@ -26,6 +26,7 @@ public class ChangeActivity extends AppCompatActivity {
     TextView textView; //확인 텍스트
     String output; //qr 스캔 결과
     Handler mHandler;
+    Handler cHandler;
     Bundle bundle;
     //qr code scanner object
     private IntentIntegrator qrScan;
@@ -44,14 +45,12 @@ public class ChangeActivity extends AppCompatActivity {
         qrScan = new IntentIntegrator(this);
         //scan option
         qrScan.setPrompt("HansungPass 에서 Scanning중...");
+        qrScan.setOrientationLocked(true);
+
         //qrScan.setOrientationLocked(false);
         qrScan.initiateScan();  //qr스캐너 작동 시작
 
 
-/*
-        ConnectThread ct = new ConnectThread();//서버 연결 쓰레드
-        ct.start();
-*/
 
         //핸들러
         mHandler = new Handler() {
@@ -62,18 +61,28 @@ public class ChangeActivity extends AppCompatActivity {
 
 
                 try {
-                    if (ss.equals("sucess")) { //성공시
+                    if (ss.equals("success")) { //성공시
+                        System.out.println("성공");
                         imageView1 = (ImageView) findViewById(R.id.imageView1);
                         imageView1.setImageResource(R.drawable.sucess2);
                         imageView1.invalidate();
                     } else { //실패시
-                        imageView2 = (ImageView) findViewById(R.id.imageView2);
-                        imageView2.setImageResource(R.drawable.fail2);
-                        imageView2.invalidate();
+                        System.out.println("실패");
+                        imageView1 = (ImageView) findViewById(R.id.imageView1);
+                        imageView1.setImageResource(R.drawable.fail2);
+                        imageView1.invalidate();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+        };
+
+         cHandler = new Handler() {
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                startActivity(new Intent(ChangeActivity.this, MainActivity.class));
+                finish();
             }
         };
 
@@ -86,9 +95,6 @@ public class ChangeActivity extends AppCompatActivity {
             IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             output = result.getContents();
             textView.setText(output);
-/*
-            ConnectThread ct = new ConnectThread();//서버 연결 쓰레드
-            ct.start();*/
 
             if (result != null) {
                 //qrcode 가 없으면
@@ -132,10 +138,10 @@ public class ChangeActivity extends AppCompatActivity {
     class ConnectThread extends Thread {
         public void run() {
 
-            //String host = "223.194.156.124";
             String host = "113.198.84.55";
             int port = 80;
             System.out.println("스레드 시작");
+
 
             try {
                 Socket socket = new Socket(host, port);
@@ -153,8 +159,8 @@ public class ChangeActivity extends AppCompatActivity {
 
                 ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
                 Object Input = inputStream.readObject();
-                String result_server = inputStream.toString();
-                System.out.println("서버에서 받은 데이터" + result_server);
+                String result_server = Input.toString();
+                System.out.println("서버에서 받은 데이터 "  + result_server);
 
 
                 Bundle bundle = new Bundle();
@@ -162,6 +168,7 @@ public class ChangeActivity extends AppCompatActivity {
                 Message msg = new Message();
                 msg.setData(bundle);
                 mHandler.sendMessage(msg);
+                cHandler.sendEmptyMessageDelayed(0,3000);
 
 
                 outstream.close();
